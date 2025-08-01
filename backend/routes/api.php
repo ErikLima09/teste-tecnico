@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\RelatorioController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -20,5 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('usuarios', UsuarioController::class);
     Route::apiResource('produtos', ProdutoController::class);
+
+    Route::get('/relatorio-sql', [RelatorioController::class, 'relatorio']);
 });
 
