@@ -3,12 +3,39 @@
         <v-card>
             <v-card-title>Cadastrar Usuário</v-card-title>
             
-            <v-card-text>
-                <v-text-field label="Nome" v-model="form.nome" required />
-                <v-text-field label="CPF" v-model="form.cpf" required />
-                <v-text-field label="Email" v-model="form.email" required type="email" />
-                <v-text-field label="Senha" v-model="form.password" required type="password" />
-            </v-card-text>
+            <v-form ref="form">
+                <v-card-text>
+                    <v-text-field label="Nome" v-model="form.nome" required :rules="[v => !!v || 'Nome é obrigatório']"/>
+                    <v-text-field 
+                        label="CPF" 
+                        v-model="form.cpf" 
+                        required :rules="[
+                            v => !!v || 'CPF é obrigatório',
+                            v => v.length >= 11 || 'CPF deve ter ao menos 11 dígitos'
+                        ]"
+                    />
+                    <v-text-field 
+                        label="Email" 
+                        v-model="form.email" 
+                        required 
+                        type="email" 
+                        :rules="[
+                            v => !!v || 'E-mail é obrigatório',
+                            v => /.+@.+\\..+/.test(v) || 'E-mail inválido'
+                        ]"
+                    />
+                    <v-text-field 
+                        label="Senha"
+                        v-model="form.password" 
+                        required 
+                        type="password" 
+                        :rules="[
+                            v => !!v || 'Senha é obrigatória',
+                            v => v.length >= 8 || 'Senha deve ter ao menos 8 caracteres'
+                        ]"
+                    />
+                </v-card-text>
+            </v-form>
             
             <v-card-actions>
                 <v-spacer />
@@ -54,6 +81,8 @@ export default {
 
     methods: {
         async salvar() {
+            const isValid = this.$refs.form.validate()
+            if (!isValid) return
             try {
                 await api.post('/usuarios', this.form)
                 this.$emit('usuarioCadastrado')

@@ -81,8 +81,15 @@
                             <v-card-title>Editar Produto</v-card-title>
 
                             <v-card-text>
-                                <v-text-field label="Nome" v-model="produtoSelecionado.nome" />
-                                <v-text-field label="Preço" v-model="produtoSelecionado.preco" type="number" />
+                                <v-text-field label="Nome" v-model="produtoSelecionado.nome" :rules="[v => !!v || 'Nome é obrigatório']"/>
+                                <v-text-field 
+                                    label="Preço" 
+                                    v-model="produtoSelecionado.preco" 
+                                    type="number" 
+                                    :rules="[
+                                        v => !!v || 'Preço é obrigatório', 
+                                        v => v > 0 || 'Preço deve ser maior que zero'
+                                    ]"/>
                                 <v-textarea label="Descrição" v-model="produtoSelecionado.descricao" />
                             </v-card-text>
 

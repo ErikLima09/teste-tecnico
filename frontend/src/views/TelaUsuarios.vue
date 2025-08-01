@@ -71,16 +71,31 @@
                         <v-card-title>Editar Usuário</v-card-title>
                         
                         <v-card-text>
-                            <v-text-field label="Nome" v-model="usuarioSelecionado.nome" />
-                            <v-text-field label="CPF" v-model="usuarioSelecionado.cpf" />
-                            <v-text-field label="Email" v-model="usuarioSelecionado.email" />
-                            <v-text-field label="Senha" v-model="usuarioSelecionado.password" type="password" />
+                            <v-text-field label = "Nome"  v-model = "usuarioSelecionado.nome" :rules="[v => !!v || 'Nome é obrigatório']" />
+                            <v-text-field 
+                                label="CPF"
+                                v-model="usuarioSelecionado.cpf" 
+                                :rules="[v => !!v || 'CPF é obrigatório', v => v.length >= 11 || 'CPF deve ter pelo menos 11 dígitos']"
+                                required
+                            />
+                            <v-text-field 
+                                label="Email"
+                                v-model="usuarioSelecionado.email"
+                                :rules="[v => !!v || 'E-mail é obrigatório', v => /.+@.+\..+/.test(v) || 'E-mail inválido']"
+                                required
+                            />
+                            <v-text-field 
+                                label="Senha"
+                                v-model="usuarioSelecionado.password"
+                                type="password"
+                                :rules="[v => !v || v.length >= 8 || 'Senha deve ter pelo menos 8 caracteres']"
+                            />
                         </v-card-text>
                         
                         <v-card-actions>
                             <v-spacer />
-                            <v-btn text @click="editarDialog = false">Cancelar</v-btn>
-                            <v-btn color="red-darken-3" @click="salvarEdicao">Salvar</v-btn>
+                            <v-btn text @click = "editarDialog = false">Cancelar</v-btn>
+                            <v-btn color = "red-darken-3" @click="salvarEdicao">Salvar</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
