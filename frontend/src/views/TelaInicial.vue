@@ -1,19 +1,17 @@
 <template>
     <v-app>
-        <!-- Barra Superior -->
-        <v-app-bar app color="primary" dark>
+        <v-app-bar app color="red-darken-3" dark>
             <v-app-bar-title>Sistema de Produtos</v-app-bar-title>
         </v-app-bar>
 
-        <!-- Menu Lateral -->
-        <v-navigation-drawer app>
+        <v-navigation-drawer app color="blue-lighten-5">
             <v-list nav dense>
                 <v-list-item
                     link
                     prepend-icon="mdi-account-group"
-                    @click="$router.push('/usuarios')"
+                    @click="$router.push('/telausuarios')"
                 >
-                <v-list-item-title>Usuários</v-list-item-title>
+                    <v-list-item-title>Usuários</v-list-item-title>
                 </v-list-item>
 
                 <v-list-item
@@ -21,7 +19,7 @@
                     prepend-icon="mdi-cube"
                     @click="$router.push('/telainicial')"
                 >
-                <v-list-item-title>Produtos</v-list-item-title>
+                    <v-list-item-title>Produtos</v-list-item-title>
                 </v-list-item>
 
                 <v-list-item
@@ -34,21 +32,28 @@
             </v-list>
         </v-navigation-drawer>
 
-        <!-- Conteúdo Principal -->
         <v-main>
+            <v-row class="mt-1 ml-1">
+                <v-col cols="12">
+                    <h2 class="text-h5 font-weight-bold">
+                        Lista de Produtos
+                    </h2>
+                </v-col>
+            </v-row>
+
             <v-container>
-                <!-- Filtros -->
                 <v-row class="mb-4" dense>
-                    <v-col cols="12" sm="6" md="4">
+                    <v-col cols="12" sm="2" md="2">
                         <v-text-field
-                            v-model="filtroNome"
+                            v-model="filtroProduto"
                             label="Buscar por nome"
                             prepend-inner-icon="mdi-magnify"
                             @input="filtrar"
                             clearable
                         />
                     </v-col>
-                    <v-col cols="12" sm="6" md="4">
+
+                    <v-col cols="12" sm="2" md="2">
                         <v-text-field
                             v-model="filtroProprietario"
                             label="Buscar por proprietário"
@@ -57,14 +62,47 @@
                             clearable
                         />
                     </v-col>
+                    
+                    <v-row class="mb-4" align="center" justify="end">
+                        <v-col cols="auto">
+                            <v-btn color="red-darken-3" @click="abrirDialog = true">
+                                Novo Produto
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+
+                    <CadastroProduto 
+                        v-model="abrirDialog"
+                        @produtoCadastrado="carregarProdutos"
+                    />
+
+                    <v-dialog v-model="editarDialog" max-width="500px">
+                        <v-card>
+                            <v-card-title>Editar Produto</v-card-title>
+
+                            <v-card-text>
+                                <v-text-field label="Nome" v-model="produtoSelecionado.nome" />
+                                <v-text-field label="Preço" v-model="produtoSelecionado.preco" type="number" />
+                                <v-textarea label="Descrição" v-model="produtoSelecionado.descricao" />
+                            </v-card-text>
+
+                            <v-card-actions>
+                                <v-spacer />
+                                <v-btn text @click="editarDialog = false">Cancelar</v-btn>
+                                <v-btn color="red-darken-3" @click="salvarEdicao">Salvar</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                 </v-row>
-                <!-- Tabela -->
+
                 <v-data-table
                     :headers="headers"
-                    :items="produtos"
+                    :items="produtosFiltrados"
                     :items-per-page="10"
                     class="elevation-1"
                     density="comfortable"
+                    :sort-by="['id']"
+                    :sort-desc="[false]"
                 >
                     <template v-slot:item.preco="{ item }">
                         R$ {{ Number(item.preco).toFixed(2).replace('.', ',') }}
@@ -72,6 +110,28 @@
 
                     <template v-slot:item.created_at="{ item }">
                         {{ formatarData(item.created_at) }}
+                    </template>
+
+                    <template v-slot:item.acoes="{ item }">
+                        <v-btn
+                            class="ma-2"
+                            color="blue-lighten-2"
+                            icon="mdi-thumb-down"
+                            variant="text"
+                            @click="abrirEdicao(item)"
+                        >
+                            <v-icon>mdi-pencil</v-icon>
+                        </v-btn>
+
+                        <v-btn
+                            class="ma-2"
+                            color="red-lighten-2"
+                            icon="mdi-thumb-down"
+                            variant="text"
+                            @click="excluirProduto(item.id)"
+                        >
+                            <v-icon>mdi-delete</v-icon>
+                        </v-btn>
                     </template>
                 </v-data-table>
             </v-container>
@@ -81,15 +141,19 @@
 
 <script>
 import api from '../plugins/axios'
+import CadastroProduto from '@/components/CadastroProduto.vue'
 
 export default {
+    components: {
+        CadastroProduto
+    },
 
     name: 'TelaInicial',
 
     data() {
         return {
             produtos: [],
-            filtroNome: '',
+            filtroProduto: '',
             filtroProprietario: '',
             headers: [
                 { text: 'ID', value: 'id' },
@@ -98,15 +162,21 @@ export default {
                 { text: 'Descrição', value: 'descricao' },
                 { text: 'User ID', value: 'usuario_id' },
                 { text: 'Data de Criação', value: 'created_at' },
+                { text: 'Ações', value: 'acoes', sortable: false }
             ],
+            abrirDialog: false,
+            produtoSelecionado: null,
+            editarDialog: false
         }
     },
 
     computed: {
         produtosFiltrados() {
             return this.produtos.filter(p =>
-                p.nome.toLowerCase().includes(this.filtroNome.toLowerCase()) &&
-                p.usuario?.nome?.toLowerCase().includes(this.filtroProprietario.toLowerCase())
+                p.nome.toLowerCase().includes(this.filtroProduto.toLowerCase()) &&
+                p.usuario?.nome?.toLowerCase().includes(this.filtroProprietario.toLocaleLowerCase())
+
+                // String(p.usuario_id).includes(this.filtroProprietario)
             )
         },
     },
@@ -127,6 +197,36 @@ export default {
         },
 
         filtrar() {
+        },
+
+        abrirEdicao(produto) {
+            this.produtoSelecionado = { ...produto }
+            this.editarDialog = true
+        },
+
+        async salvarEdicao() {
+            try {
+                await api.put(`/produtos/${this.produtoSelecionado.id}`, {
+                    nome: this.produtoSelecionado.nome,
+                    preco: this.produtoSelecionado.preco,
+                    descricao: this.produtoSelecionado.descricao,
+                })
+                this.editarDialog = false
+                this.carregarProdutos()
+            } catch (error) {
+                console.error('Erro ao salvar edição:', error)
+            }
+        },
+
+        async excluirProduto(id) {
+            if (confirm('Tem certeza que deseja excluir este produto?')) {
+                try {
+                    await api.delete(`/produtos/${id}`)
+                    this.carregarProdutos()
+                } catch (error) {
+                    console.error('Erro ao excluir produto:', error)
+                }
+            }
         },
 
         logout() {

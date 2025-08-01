@@ -25,7 +25,7 @@ class UsuarioSeeder extends Seeder
         ]);
 
         Usuario::create([
-            'nome' => 'Usuario3',
+            'nome' => 'Usuario 3',
             'cpf' => '33333333333',
             'email' => 'teste3@email.com',
             'password' => Hash::make('12345678'),

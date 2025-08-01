@@ -7,7 +7,7 @@
                     <v-text-field v-model="email" label="Email" required />
                     <v-text-field v-model="password" label="Senha" type="password" required />
 
-                    <v-btn type="submit" color="primary" block>Entrar</v-btn>
+                    <v-btn type="submit" color="red-darken-3" block>Entrar</v-btn>
                 </v-form>
                 <div v-if="error" class="text-red mt-2">{{  error  }}</div>
             </v-card-text>
@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import api from '../plugins/axios'
 
 export default {
@@ -30,9 +29,8 @@ export default {
 
     methods: {
         async login() {
-        
             try {
-                const response = await axios.post('http://localhost:8000/api/login', {
+                const response = await api.get('http://localhost:8000/api/login', {
                     email: this.email,
                     password: this.password,
                 })
