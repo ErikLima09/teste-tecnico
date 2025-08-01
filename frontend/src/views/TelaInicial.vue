@@ -163,13 +163,13 @@ export default {
             filtroProduto: '',
             filtroProprietario: '',
             headers: [
-                { text: 'ID', value: 'id' },
-                { text: 'Nome', value: 'nome' },
-                { text: 'Preço', value: 'preco' },
-                { text: 'Descrição', value: 'descricao' },
-                { text: 'User ID', value: 'usuario_id' },
-                { text: 'Data de Criação', value: 'created_at' },
-                { text: 'Ações', value: 'acoes', sortable: false }
+                { title: 'ID', key: 'id' },
+                { title: 'Nome', key: 'nome' },
+                { title: 'Preço', key: 'preco' },
+                { title: 'Descrição', key: 'descricao' },
+                { title: 'User ID', key: 'usuario_id' },
+                { title: 'Data de Criação', key: 'created_at' },
+                { title: 'Ações', key: 'acoes', sortable: false }
             ],
             abrirDialog: false,
             produtoSelecionado: null,
