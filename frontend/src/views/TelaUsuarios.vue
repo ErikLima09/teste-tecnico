@@ -152,12 +152,12 @@ export default {
             editarDialog: false,
             usuarioSelecionado: null,
             headers: [
-                { text: 'ID', value: 'id' },
-                { text: 'Nome', value: 'nome' },
-                { text: 'CPF', value: 'cpf' },
-                { text: 'E-mail', value: 'email' },
-                { text: 'Criado em', value: 'created_at' },
-                { text: 'Ações', value: 'acoes', sortable: false },
+                { title: 'ID', key: 'id' },
+                { title: 'Nome', key: 'nome' },
+                { title: 'CPF', key: 'cpf' },
+                { title: 'E-mail', key: 'email' },
+                { title: 'Criado em', key: 'created_at' },
+                { title: 'Ações', key: 'acoes', sortable: false },
             ],
         }
     },
