@@ -19,10 +19,8 @@
                         v-model="form.email" 
                         required 
                         type="email" 
-                        :rules="[
-                            v => !!v || 'E-mail é obrigatório',
-                            v => /.+@.+\\..+/.test(v) || 'E-mail inválido'
-                        ]"
+                        :rules="[v => !!v || 'E-mail é obrigatório', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'E-mail inválido'
+]"
                     />
                     <v-text-field 
                         label="Senha"

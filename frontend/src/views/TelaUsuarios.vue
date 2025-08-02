@@ -42,23 +42,22 @@
             </v-row>
         
             <v-container>
-                <v-row class="mb-8" align="center">
-                    <v-col cols="12" sm="4">
+                <v-row class="mb-4" align="center">
+                    <v-col cols="12" sm="6" md="6">
                         <v-text-field
                             v-model="filtroNome"
                             label="Buscar por nome"
                             prepend-inner-icon="mdi-magnify"
+                            @input="filtrar"
                             clearable
                         />
                     </v-col>
 
-                    <v-row class="mb-4" align="center" justify="end">
-                        <v-col cols="2">
-                            <v-btn color="red-darken-3" @click="abrirDialog = true">
-                                Novo Usuário
-                            </v-btn>
-                        </v-col>
-                    </v-row>
+                    <v-col cols="12" sm="6" md="6" class="text-right mb-8">
+                        <v-btn color="red-darken-3" @click="abrirDialog = true">
+                            Novo Usuário
+                        </v-btn>
+                    </v-col>
                 </v-row>
 
                 <CadastroUsuario
@@ -103,8 +102,10 @@
                 <v-data-table
                     :headers="headers"
                     :items="usuariosFiltrados"
-                    class="elevation-1"
+                    :sort-by="['id']"
+                    :sort-desc="[false]"
                     :items-per-page="10"
+                    class="elevation-1"
                 >
                     <template v-slot:item.created_at="{ item }">
                         {{  formatarData(item.created_at) }}
@@ -165,8 +166,9 @@ export default {
     computed: {
         usuariosFiltrados() {
             return this.usuarios.filter(u =>
-                u.nome.toLowerCase().includes(this.filtroNome.toLowerCase())
+                u.nome.toLowerCase().includes((this.filtroNome || '').toLowerCase())
             )
+            .sort((a, b) => a.id - b.id)
         },
     },
 

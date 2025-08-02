@@ -41,11 +41,20 @@ class UsuarioController extends Controller
     {
         $usuario = Usuario::findOrFail($id);
 
-        $usuario->update($request->only('nome', 'cpf', 'email', 'password'));
+         $request->validate([
+            'nome' => 'required|string',
+            'cpf' => 'required|string',
+            'email' => 'required|email|unique:usuarios,email,' . $id,
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        $dados = $request->only('nome', 'cpf', 'email');
 
         if ($request->filled('password')) {
-            $usuario->password = Hash::make($request->password);
+            $dados['password'] = Hash::make($request->password);
         }
+
+        $usuario->update($dados);
 
         return response()->json($usuario);
     }

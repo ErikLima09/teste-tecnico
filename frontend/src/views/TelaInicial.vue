@@ -42,34 +42,32 @@
             </v-row>
 
             <v-container>
-                <v-row class="mb-4" dense>
-                    <v-col cols="12" sm="2" md="2">
+                <v-row class="mb-4" align="center" dense>
+                    <v-col cols="12" sm="4" md="4">
                         <v-text-field
                             v-model="filtroProduto"
-                            label="Buscar por nome"
+                            label="Buscar por produto"
                             prepend-inner-icon="mdi-magnify"
                             @input="filtrar"
                             clearable
                         />
                     </v-col>
 
-                    <v-col cols="12" sm="2" md="2">
+                    <v-col cols="12" sm="4" md="4">
                         <v-text-field
                             v-model="filtroProprietario"
-                            label="Buscar por proprietário"
+                            label="Buscar por usuário"
                             prepend-inner-icon="mdi-account"
                             @input="filtrar"
                             clearable
                         />
                     </v-col>
                     
-                    <v-row class="mb-4" align="center" justify="end">
-                        <v-col cols="auto">
-                            <v-btn color="red-darken-3" @click="abrirDialog = true">
-                                Novo Produto
-                            </v-btn>
-                        </v-col>
-                    </v-row>
+                    <v-col cols="12" sm="4" md="4" class="text-right mb-8">
+                        <v-btn color="red-darken-3" @click="abrirDialog = true">
+                            Novo Produto
+                        </v-btn>
+                    </v-col>
 
                     <CadastroProduto 
                         v-model="abrirDialog"
@@ -106,10 +104,10 @@
                     :headers="headers"
                     :items="produtosFiltrados"
                     :items-per-page="10"
-                    class="elevation-1"
-                    density="comfortable"
                     :sort-by="['id']"
                     :sort-desc="[false]"
+                    class="elevation-1"
+                    density="comfortable"
                 >
                     <template v-slot:item.preco="{ item }">
                         R$ {{ Number(item.preco).toFixed(2).replace('.', ',') }}
@@ -167,7 +165,7 @@ export default {
                 { title: 'Nome', key: 'nome' },
                 { title: 'Preço', key: 'preco' },
                 { title: 'Descrição', key: 'descricao' },
-                { title: 'User ID', key: 'usuario_id' },
+                { title: 'Usuário', key: 'usuario.nome' },
                 { title: 'Data de Criação', key: 'created_at' },
                 { title: 'Ações', key: 'acoes', sortable: false }
             ],
@@ -180,11 +178,10 @@ export default {
     computed: {
         produtosFiltrados() {
             return this.produtos.filter(p =>
-                p.nome.toLowerCase().includes(this.filtroProduto.toLowerCase()) &&
-                p.usuario?.nome?.toLowerCase().includes(this.filtroProprietario.toLocaleLowerCase())
-
-                // String(p.usuario_id).includes(this.filtroProprietario)
+                p.nome.toLowerCase().includes((this.filtroProduto || '').toLowerCase()) &&
+                p.usuario?.nome?.toLowerCase().includes((this.filtroProprietario || '').toLocaleLowerCase())
             )
+            .sort((a, b) => a.id - b.id)
         },
     },
 
