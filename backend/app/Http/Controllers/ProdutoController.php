@@ -35,7 +35,7 @@ class ProdutoController extends Controller
         return Produto::with('usuario')->findOrFail($id);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $produto = Produto::findOrFail($id);
         
